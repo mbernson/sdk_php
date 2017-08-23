@@ -136,9 +136,9 @@ class ApiClient
      *
      * @return BunqResponseRaw
      */
-    public function get($uri, array $customHeaders = [])
+    public function get($uri, array $query = [], array $customHeaders = [])
     {
-        return $this->request(self::METHOD_GET, $uri, [], $customHeaders);
+        return $this->request(self::METHOD_GET, $uri, [], $query, $customHeaders);
     }
 
     /**
@@ -150,7 +150,7 @@ class ApiClient
      */
     public function post($uri, $body, array $customHeaders = [])
     {
-        return $this->request(self::METHOD_POST, $uri, $body, $customHeaders);
+        return $this->request(self::METHOD_POST, $uri, $body, [], $customHeaders);
     }
 
     /**
@@ -162,7 +162,7 @@ class ApiClient
      */
     public function put($uri, array $body = [], array $customHeaders = [])
     {
-        return $this->request(self::METHOD_PUT, $uri, $body, $customHeaders);
+        return $this->request(self::METHOD_PUT, $uri, $body, [], $customHeaders);
     }
 
     /**
@@ -173,7 +173,7 @@ class ApiClient
      */
     public function delete($uri, array $customHeaders = [])
     {
-        return $this->request(self::METHOD_DELETE, $uri, [], $customHeaders);
+        return $this->request(self::METHOD_DELETE, $uri, [], [], $customHeaders);
     }
 
     /**
@@ -184,13 +184,13 @@ class ApiClient
      *
      * @return BunqResponseRaw
      */
-    private function request($method, $uri, $body, array $customHeaders)
+    private function request($method, $uri, $body, array $query, array $customHeaders)
     {
         $this->initialize();
 
         $response = $this->httpClient->request(
             $method,
-            $this->determineFullUri($uri),
+            $this->determineFullUri($uri, $query),
             $this->determineRequestOptions($body, $customHeaders)
         );
 
@@ -302,11 +302,13 @@ class ApiClient
      *
      * @return Uri
      */
-    private function determineFullUri($uri)
+    private function determineFullUri($uri, $query = [])
     {
         $basePath = $this->apiContext->determineBaseUri()->getPath();
 
-        return $this->apiContext->determineBaseUri()->withPath($basePath . $uri);
+        return $this->apiContext->determineBaseUri()
+            ->withPath($basePath . $uri)
+            ->withQuery(http_build_query($query));
     }
 
     /**

@@ -282,7 +282,7 @@ class Payment extends BunqModel
      *
      * @return BunqResponse<BunqModel[]|Payment[]>
      */
-    public static function listing(ApiContext $apiContext, $userId, $monetaryAccountId, array $customHeaders = [])
+    public static function listing(ApiContext $apiContext, $userId, $monetaryAccountId, array $query = [], array $customHeaders = [])
     {
         $apiClient = new ApiClient($apiContext);
         $responseRaw = $apiClient->get(
@@ -290,6 +290,7 @@ class Payment extends BunqModel
                 self::ENDPOINT_URL_LISTING,
                 [$userId, $monetaryAccountId]
             ),
+            $query,
             $customHeaders
         );
 

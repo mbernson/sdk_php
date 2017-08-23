@@ -78,8 +78,11 @@ class RequestHandlerSignature extends RequestHandlerBase
         $body,
         array $headers
     ) {
+        // Super ugly, I know
+        $queryString = empty($uri->getQuery()) ? '' : '?' . $uri->getQuery();
+
         $dataToSign =
-            $method . self::REQUEST_METHOD_PATH_SEPARATOR . $uri->getPath() .
+            $method . self::REQUEST_METHOD_PATH_SEPARATOR . $uri->getPath() . $queryString .
             $this->determineHeaderStringForSignedRequest($headers) .
             self::NEWLINE . self::NEWLINE .
             $body;
